@@ -1,0 +1,330 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Müşteriler</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a routerLink="/">Ana Sayfa</a></li>
+              <li class="breadcrumb-item active">Müşteriler</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+  
+    <!-- Main content -->
+    <section class="content">
+  
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Müşteriler</h3>
+  
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+  
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModel">Müşteri Ekle</button>
+              <button class="btn btn-info mx-2" (click)="exportExcel()">Excel'e Aktar</button>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group offset-6">
+                <input
+                  class="form-control"
+                  type="search"
+                  [(ngModel)]="filterText"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Aranacak kelime"
+                  aria-label="Aranacak kelime">
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="card-body">
+          <table class="table table-hovered" id="excel-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Müşteri Adı Soyadı</th>
+                <th>Mail Adresi</th>
+                <th>Mesleği</th>
+                <th>Cinsiyeti</th>
+                <th>Doğum Tarihi</th>
+                <th>Web Sitesi</th>
+                <th>Adresi</th>
+                <th>Notu</th>
+                <th>E-Posta İzni</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let customer of customers
+              | customerPipe: filterText
+              let index = index">
+                <td [innerText]="index + 1"></td>
+                <td [innerText]="customer.FullName"></td>
+                <td [innerText]="customer.Email"></td>
+                <td [innerText]="customer.Profession"></td>
+                <td [innerText]="customer.Gender"></td>
+                <td [innerText]="customer.BirthDate"></td>
+                <td [innerText]="customer.Website"></td>
+                <td [innerText]="customer.Address"></td>
+                <td [innerText]="customer.Notes"></td>
+                <td [innerText]="customer.AllowPromotionEmails"></td>
+                <td>
+    
+                  <button class="btn btn-warning mx-2" data-bs-toggle="modal" data-bs-target="#updateModel" (click)="getCustomer(customer)">Müşteri Güncelle</button>
+                  
+                
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  
+  <div class="modal fade" id="addModel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Müşteri Ekle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form #addForm="ngForm"  [formGroup]="ngForm" autocomplete="off">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Müşteri Adı Soyadı</label>
+            <input type="text" class="form-control" ngModel name="FullName" #FullName required minlength="3" placeholder="Müşteri adı soyadı">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Mail Adresi</label>
+            <input type="email" class="form-control" ngModel name="Email" #Email required email placeholder="Mail adresi">
+            <div *ngIf="emailForm.controls.email.errors && (emailForm.controls.email.dirty || emailForm.controls.email.touched)">
+              <div *ngIf="emailForm.controls.email.errors.required">E-posta alanı zorunludur.</div>
+              <div *ngIf="emailForm.controls.email.errors.email">Geçerli bir e-posta adresi giriniz.</div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Cinsiyet:</label>
+            <div>
+               <input type="radio" class="form-control" ngModel name="Gender" value="Male"> Erkek
+               <input type="radio" class="form-control" ngModel name="Gender" value="Female"> Kadın
+            </div>
+          </div>
+           <div class="form-group">
+            <label for="exampleInputEmail1">Meslek:</label>
+            <input type="text" class="form-control" ngModel name="Profession" #Profession placeholder="Mesleği">
+           </div>
+           <div class="form-group">
+            <label for="exampleInputEmail1">Doğum Tarihi:</label>
+            <input type="date" class="form-control" ngModel name="BirthDate" #BirthDate> 
+           </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Web Sitesi:</label>
+              <input type="text" ngModel name="Website" #Website placeholder="Web sitesi..">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Reklam Mailleri İstiyor mu:</label>
+              <input type="checkbox"ngModel name="AllowPromotionEmails" #AllowPromotionEmails>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Adres Bilgisi:</label>
+              <input type="text" ngModel name="Address" #Address placeholder="Adres Bilgisi">
+            </div>
+            <div class="form-group">
+
+              <label for="exampleInputEmail1">Yaşadığı İl:</label>
+              <select ngModel name="City">
+                <option *ngFor="let city of citys" [value]="citys.id">{{city.CityName}}</option>
+              </select>
+
+            </div>
+           
+               <div class="form-group">
+                <label for="exampleInputEmail1">Kişiye Ait Notlar:</label>
+                <textarea ngModel name="Notes" #Notes></textarea>
+               </div>
+
+               <div class="form-group">
+               <div id="telefonAlan">
+                <input type="text" name="telefon" *ngFor="let telefon of telephoneNumber; let i = index" [(ngModel)]="telephoneNumber[i]">
+              </div>
+              <button type="button" (click)="yeniTelefonEkle()">Yeni telefon ekle</button>
+               </div>
+
+              
+        </form>
+       
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" [disabled]="!addForm.valid" (click)="add(addForm)">Müşteri Ekle</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+
+
+
+  <!-- ------------------------------- -->
+
+  <form #addForm="ngForm" autocomplete="off">
+    <div class="form-group">
+      <label for="exampleInputEmail1">Müşteri Adı Soyadı</label>
+      <input type="text" class="form-control" [(ngModel)]="FullName" name="FullName" #FullName="ngModel" required minlength="3" placeholder="Müşteri adı soyadı">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Mail Adresi</label>
+      <input type="email" class="form-control" [(ngModel)]="Email" name="Email" #Email="ngModel" required email placeholder="Mail adresi">
+      <div *ngIf="Email.invalid && (Email.dirty || Email.touched)">
+        <div *ngIf="Email.errors.required">E-posta alanı zorunludur.</div>
+        <div *ngIf="Email.errors.email">Geçerli bir e-posta adresi giriniz.</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Cinsiyet:</label>
+      <div>
+         <input type="radio" class="form-control" [(ngModel)]="Gender" name="Gender" value="Male"> Erkek
+         <input type="radio" class="form-control" [(ngModel)]="Gender" name="Gender" value="Female"> Kadın
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Meslek:</label>
+      <input type="text" class="form-control" [(ngModel)]="Profession" name="Profession" #Profession placeholder="Mesleği">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Doğum Tarihi:</label>
+      <input type="date" class="form-control" [(ngModel)]="BirthDate" name="BirthDate" #BirthDate> 
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Web Sitesi:</label>
+      <input type="text" [(ngModel)]="Website" name="Website" #Website placeholder="Web sitesi..">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Reklam Mailleri İstiyor mu:</label>
+      <input type="checkbox" [(ngModel)]="AllowPromotionEmails" name="AllowPromotionEmails" #AllowPromotionEmails>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Adres Bilgisi:</label>
+      <input type="text" [(ngModel)]="Address" name="Address" #Address placeholder="Adres Bilgisi">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Yaşadığı İl:</label>
+      <select [(ngModel)]="City" name="City">
+        <option *ngFor="let city of citys" [value]="city.id">{{ city.CityName }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Kişiye Ait Notlar:</label>
+      <textarea [(ngModel)]="Notes" name="Notes" #Notes></textarea>
+    </div>
+  </form>
+  
+
+
+
+
+
+
+  <form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
+    <input type="email" formControlName="email">
+    <div *ngIf="emailForm.controls.email.errors && (emailForm.controls.email.dirty || emailForm.controls.email.touched)">
+      <div *ngIf="emailForm.controls.email.errors.required">E-posta alanı zorunludur.</div>
+      <div *ngIf="emailForm.controls.email.errors.email">Geçerli bir e-posta adresi giriniz.</div>
+    </div>
+    <button type="submit" [disabled]="!emailForm.valid">Submit</button>
+  </form>
+
+
+
+
+
+
+
+  <div class="modal fade" id="updateModel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Müşteri Güncelle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form #updateForm="ngForm">
+            <div class="form-group">
+              <label for="exampleInputEmail1">Müşteri Adı Soyadı</label>
+              <input type="text" class="form-control" [(ngModel)]="customer.FullName" [ngModelOptions]="{standalone: true}" name="FullName"  #FullName required minlength="3" placeholder="Müşteri adı soyadı">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Mail Adresi</label>
+              <input type="email" class="form-control"  [(ngModel)]="customer.Email" [ngModelOptions]="{standalone: true}" name="Email" #Email required email placeholder="Mail adresi">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Cinsiyet:</label>
+              <div>
+                 <input type="radio" class="form-control" [(ngModel)]="customer.Gender" [ngModelOptions]="{standalone: true}" name="Gender" #Gender  value="Male"> Erkek
+                 <input type="radio" class="form-control"  [(ngModel)]="customer.Gender" [ngModelOptions]="{standalone: true}" name="Gender" #Gender  value="Female"> Kadın
+              </div>
+            </div>
+             <div class="form-group">
+              <label for="exampleInputEmail1">Meslek:</label>
+              <input type="text" class="form-control" [(ngModel)]="customer.Profession" [ngModelOptions]="{standalone: true}" name="Profession"  #Profession  placeholder="Mesleği">
+             </div>
+             <div class="form-group">
+              <label for="exampleInputEmail1">Doğum Tarihi:</label>
+              <input type="date" class="form-control" [(ngModel)]="customer.BirthDate" [ngModelOptions]="{standalone: true}" name="BirthDate" #BirthDate> 
+             </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Web Sitesi:</label>
+                <input type="text" [(ngModel)]="customer.Website" [ngModelOptions]="{standalone: true}" name="Website" #Website placeholder="Web sitesi..">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Reklam Mailleri İstiyor mu:</label>
+                <input type="checkbox" [(ngModel)]="customer.AllowPromotionEmails" [ngModelOptions]="{standalone: true}" name="AllowPromotionEmails" #AllowPromotionEmails >
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Adres Bilgisi:</label>
+                <input type="text" [(ngModel)]="customer.Address" [ngModelOptions]="{standalone: true}" name="Address" #Address  placeholder="Adres Bilgisi">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Yaşadığı İl:</label>
+                <select ngModel name="City">
+                  <option *ngFor="let citys of citys" [value]="citys.id">{{citys.CityName}}</option>
+                </select>
+              </div>
+             
+             
+                 <div class="form-group">
+                  <label for="exampleInputEmail1">Kişiye Ait Notlar:</label>
+                  <textarea [(ngModel)]="customer.Notes" [ngModelOptions]="{standalone: true}" name="Notes" #Notes ></textarea>
+                 </div>
+            </form>
+          </div>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" [disabled]="!updateForm.valid" (click)="update()">Müşteri Güncelle</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="updateModelCloseBtn">Kapat</button>
+        </div>
+       </div>
+    </div>
+ </div>
+ 
+  
+  
